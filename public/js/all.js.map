@@ -1,0 +1,1 @@
+{"version":3,"sources":["script.js"],"names":["a","b","c"],"mappings":";;AAAA,IAAIA,IAAI,CAAR;AACA,IAAIC,IAAI,CAAR;AACA,IAAIC,IAAI,CAAR","file":"all.js","sourcesContent":["let a = 1\nlet b = 2\nlet c = 3"]}

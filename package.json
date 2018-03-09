@@ -1,21 +1,34 @@
 {
-  "name": "ss",
+  "name": "toolflow",
   "version": "1.0.0",
-  "main": "gulpfile.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git@gitlab.gofund.cn:terminal_new/ggblog.git"
-  },
   "author": "",
   "license": "ISC",
+  "dependencies": {},
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-es2015": "^6.24.1",
+    "browser-sync": "^2.18.13",
     "gulp": "^3.9.1",
-    "gulp-connect": "^5.0.0",
-    "gulp-postcss": "^6.1.1",
-    "postcss-px2rem": "^0.3.0"
+    "gulp-babel": "^7.0.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-less": "^3.3.2",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-notify": "^3.0.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-sourcemaps": "^2.6.1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huainanhai/flexible.git"
+  },
+  "bugs": {
+    "url": "https://github.com/huainanhai/flexible/issues"
+  },
+  "homepage": "https://github.com/huainanhai/flexible#readme",
   "description": ""
 }

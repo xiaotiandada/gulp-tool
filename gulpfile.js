@@ -1,32 +1,53 @@
 var gulp = require('gulp');
-var postcss = require('gulp-postcss');
-var px2rem = require('postcss-px2rem');
-var connect = require('gulp-connect');
+var less = require('gulp-less');
+var path = require('path');
+var cssmin = require('gulp-minify-css');
+// 生成sourcemap文件
+var sourcemaps = require('gulp-sourcemaps');
+// 出现异常并不终止watch事件（gulp-plumber），并提示我们出现了错误（gulp-notify）
+var notify = require('gulp-notify');
+var plumber  = require('gulp-plumber');
 
-//创建watch任务去检测html文件,其定义了当html改动之后，去调用一个Gulp的Task
-gulp.task('watch', function () {
-  gulp.watch(['./public/html/*.html'], ['html']);
-});
-//使用postcss px2rem 得到rem
-gulp.task('css', function() {
-    var processors = [px2rem({remUnit: 75})];
-    return gulp.src('./public/css/*.css')
-        .pipe(postcss(processors))
-        .pipe(gulp.dest('./public/dest'));
-});
-//使用connect启动一个Web服务器
-gulp.task('connect',function(){
-	connect.server({
-		root:'public',
-		port:'8000',
-		livereload: true
-	})
-});
-//html任务
-gulp.task('html',function(){
-	gulp.src('./public/html/*.html')
-	.pipe(connect.reload());
+var browserSync = require('browser-sync').create();
+
+
+var babel = require("gulp-babel");
+var concat = require("gulp-concat");
+
+
+
+gulp.task('watch',['build-style','build-js'],function(gulpCallback){
+    browserSync.init({
+        server: './',
+        open : true
+    },function callback(){
+        gulp.watch('./*.html',browserSync.reload);
+        gulp.watch('./less/**/*.less',['build-style']);
+        gulp.watch('./es6/**/*.js',['build-js']);
+        gulpCallback();
+    });
 });
 
-//运行gulp 默认的Task
-gulp.task('default',['css','connect','watch'])
+gulp.task('build-style',function(){
+    return gulp.src('./less/**/*.less')
+    .pipe(sourcemaps.init())
+    .pipe(plumber({errorHandler: notify.onError('Error: <%= error.message %>')}))
+    .pipe(less({
+        paths : [path.join(__dirname,'less','includes')]
+    }))
+    .pipe(cssmin())
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('./public/css'))
+    .pipe(browserSync.stream());
+});
+
+gulp.task('build-js',function(){
+    return gulp.src('./es6/**/*.js')
+    .pipe(sourcemaps.init())
+    .pipe(babel())
+    .pipe(concat("all.js"))
+    .pipe(sourcemaps.write("."))
+    .pipe(gulp.dest("./public/js"));
+});
+
+gulp.task('default',['watch']);
