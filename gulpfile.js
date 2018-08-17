@@ -1,18 +1,18 @@
-var gulp = require('gulp');
-var less = require('gulp-less');
-var path = require('path');
-var cssmin = require('gulp-minify-css');
+const gulp = require('gulp');
+const less = require('gulp-less');
+const path = require('path');
+const cssmin = require('gulp-minify-css');
 // 生成sourcemap文件
-var sourcemaps = require('gulp-sourcemaps');
+const sourcemaps = require('gulp-sourcemaps');
 // 出现异常并不终止watch事件（gulp-plumber），并提示我们出现了错误（gulp-notify）
-var notify = require('gulp-notify');
-var plumber  = require('gulp-plumber');
+const notify = require('gulp-notify');
+const plumber  = require('gulp-plumber');
 
-var browserSync = require('browser-sync').create();
+const browserSync = require('browser-sync').create();
 
 
-var babel = require("gulp-babel");
-var concat = require("gulp-concat");
+const babel = require("gulp-babel");
+const concat = require("gulp-concat");
 
 
 
@@ -29,7 +29,7 @@ gulp.task('watch',['build-style','build-js'],function(gulpCallback){
 });
 
 gulp.task('build-style',function(){
-    return gulp.src('./less/**/*.less')
+    return gulp.src('./less/*.less')
     .pipe(sourcemaps.init())
     .pipe(plumber({errorHandler: notify.onError('Error: <%= error.message %>')}))
     .pipe(less({
@@ -42,7 +42,7 @@ gulp.task('build-style',function(){
 });
 
 gulp.task('build-js',function(){
-    return gulp.src('./es6/**/*.js')
+    return gulp.src('./es6/*.js')
     .pipe(sourcemaps.init())
     .pipe(babel())
     .pipe(concat("all.js"))
