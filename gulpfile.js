@@ -35,7 +35,9 @@ gulp.task('build-style',function(){
     .pipe(less({
         paths : [path.join(__dirname,'less','includes')]
     }))
-    .pipe(cssmin())
+    // .pipe(cssmin())
+
+
     .pipe(sourcemaps.write())
     .pipe(gulp.dest('./public/css'))
     .pipe(browserSync.stream());
@@ -45,7 +47,7 @@ gulp.task('build-js',function(){
     return gulp.src('./es6/*.js')
     .pipe(sourcemaps.init())
     .pipe(babel())
-    .pipe(concat("all.js"))
+    // .pipe(concat("all.js"))
     .pipe(sourcemaps.write("."))
     .pipe(gulp.dest("./public/js"));
 });
