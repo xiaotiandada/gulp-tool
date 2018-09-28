@@ -13,43 +13,51 @@ const browserSync = require('browser-sync').create();
 
 const babel = require("gulp-babel");
 const concat = require("gulp-concat");
+const autoprefixer = require('gulp-autoprefixer');
 
-
-
-gulp.task('watch',['build-style','build-js'],function(gulpCallback){
+gulp.task('watch',['build-html','build-less','build-js'],function(gulpCallback){
     browserSync.init({
-        server: './',
+        server: './dist',
         open : true
     },function callback(){
-        gulp.watch('./*.html',browserSync.reload);
-        gulp.watch('./less/**/*.less',['build-style']);
-        gulp.watch('./es6/**/*.js',['build-js']);
+        gulp.watch('./src/**/*.html',['build-html']);
+        gulp.watch('./src/less/**/*.less',['build-less']);
+        gulp.watch('./src/es6/**/*.js',['build-js']);
         gulpCallback();
     });
 });
 
-gulp.task('build-style',function(){
-    return gulp.src('./less/*.less')
+gulp.task('build-html', function () {
+    return gulp.src('./src/*.html')
+        .pipe(gulp.dest('dist'))
+        .pipe(browserSync.stream());
+})
+
+gulp.task('build-less',function(){
+    return gulp.src('./src/less/*.less')
     .pipe(sourcemaps.init())
     .pipe(plumber({errorHandler: notify.onError('Error: <%= error.message %>')}))
     .pipe(less({
         paths : [path.join(__dirname,'less','includes')]
     }))
     // .pipe(cssmin())
-
-
+    .pipe(autoprefixer({
+        browsers: ['last 2 versions'],
+        cascade: false
+    }))
     .pipe(sourcemaps.write())
-    .pipe(gulp.dest('./public/css'))
+    .pipe(gulp.dest('./dist/css'))
     .pipe(browserSync.stream());
 });
 
 gulp.task('build-js',function(){
-    return gulp.src('./es6/*.js')
+    return gulp.src('./src/es6/*.js')
     .pipe(sourcemaps.init())
     .pipe(babel())
     // .pipe(concat("all.js"))
     .pipe(sourcemaps.write("."))
-    .pipe(gulp.dest("./public/js"));
+    .pipe(gulp.dest("./dist/js"))
+    .pipe(browserSync.stream())
 });
 
 gulp.task('default',['watch']);

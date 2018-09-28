@@ -18,3 +18,14 @@ gulp
 > 以后还会不断完善更新工具！！！
 
 > 如果觉得不错的话记得点个小星星 Star 蟹蟹～～
+
+###
+
+v0.0.1
+支持 Less
+支持 ECMAScript6
+支持 多端同步预览 使用 browser-sync
+
+v0.0.2
+增加 gulp-autoprefixer
+修改 文件目录结构
