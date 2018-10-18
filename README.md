@@ -32,4 +32,6 @@ v0.0.2
 
 v0.0.3
 - 增加 gulp-uglify
-- 增加gulp任务 压缩第三方css 压缩第三方 js
+- 增加gulp任务
+    - 压缩第三方css
+    - 压缩第三方 js
