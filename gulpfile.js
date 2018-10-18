@@ -7,7 +7,7 @@ const sourcemaps = require('gulp-sourcemaps');
 // 出现异常并不终止watch事件（gulp-plumber），并提示我们出现了错误（gulp-notify）
 const notify = require('gulp-notify');
 const plumber  = require('gulp-plumber');
-
+const uglify = require('gulp-uglify');
 const browserSync = require('browser-sync').create();
 
 
@@ -22,7 +22,9 @@ gulp.task('watch',['build-html','build-less','build-js'],function(gulpCallback){
     },function callback(){
         gulp.watch('./src/**/*.html',['build-html']);
         gulp.watch('./src/less/**/*.less',['build-less']);
-        gulp.watch('./src/es6/**/*.js',['build-js']);
+        gulp.watch('./src/css/**/*.css',['build-css']);
+        gulp.watch('./src/es6/**/*.js',['build-es6']);
+        gulp.watch('./src/js/**/*.js',['build-js']);
         gulpCallback();
     });
 });
@@ -40,7 +42,7 @@ gulp.task('build-less',function(){
     .pipe(less({
         paths : [path.join(__dirname,'less','includes')]
     }))
-    // .pipe(cssmin())
+    .pipe(cssmin())
     .pipe(autoprefixer({
         browsers: ['last 2 versions'],
         cascade: false
@@ -50,14 +52,32 @@ gulp.task('build-less',function(){
     .pipe(browserSync.stream());
 });
 
-gulp.task('build-js',function(){
+/**
+ * 压缩第三方css
+ */
+gulp.task('build-css', function () {
+    return gulp.src('./src/css/*.css')
+        .pipe(cssmin())
+        .pipe(gulp.dest('./dist/css'))
+})
+
+gulp.task('build-es6',function(){
     return gulp.src('./src/es6/*.js')
-    .pipe(sourcemaps.init())
-    .pipe(babel())
-    // .pipe(concat("all.js"))
-    .pipe(sourcemaps.write("."))
-    .pipe(gulp.dest("./dist/js"))
-    .pipe(browserSync.stream())
+        .pipe(sourcemaps.init())
+        .pipe(babel())
+        .pipe(uglify({ mangle: false }))
+        // .pipe(concat("all.js"))
+        .pipe(sourcemaps.write("."))
+        .pipe(gulp.dest("./dist/js"))
+        .pipe(browserSync.stream())
 });
 
+/**
+ * 压缩第三方js
+ */
+gulp.task('build-js', function () {
+    return gulp.src('./src/js/*.js')
+        .pipe(uglify({ mangle: false }))
+        .pipe(gulp.dest('./dist/js'))
+});
 gulp.task('default',['watch']);
