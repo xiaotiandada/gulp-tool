@@ -15,6 +15,20 @@ const babel = require("gulp-babel");
 const concat = require("gulp-concat");
 const autoprefixer = require('gulp-autoprefixer');
 
+
+// ts
+
+const ts = require("gulp-typescript");
+const tsProject = ts.createProject("tsconfig.json");
+
+const browserify = require("browserify");
+const source = require('vinyl-source-stream');
+const tsify = require("tsify");
+
+const buffer = require('vinyl-buffer');
+
+
+
 gulp.task('watch',['build-html','build-less','build-js'],function(gulpCallback){
     browserSync.init({
         server: './dist',
@@ -24,6 +38,7 @@ gulp.task('watch',['build-html','build-less','build-js'],function(gulpCallback){
         gulp.watch('./src/less/**/*.less',['build-less']);
         gulp.watch('./src/css/**/*.css',['build-css']);
         gulp.watch('./src/es6/**/*.js',['build-es6']);
+        gulp.watch('./src/ts/**/*.ts',['build-ts']);
         gulp.watch('./src/js/**/*.js',['build-js']);
         gulpCallback();
     });
@@ -73,6 +88,28 @@ gulp.task('build-es6',function(){
 });
 
 /**
+ * ts
+ */
+gulp.task("build-ts", function () {
+    return browserify({
+        basedir: '.',
+        debug: true,
+        entries: ['src/ts/main.ts'],
+        cache: {},
+        packageCache: {}
+    })
+    .plugin(tsify)
+    .bundle()
+    .pipe(source('main.js'))
+    .pipe(buffer())
+    .pipe(sourcemaps.init({loadMaps: true}))
+    .pipe(uglify())
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest("dist/js"))
+    .pipe(browserSync.stream())
+});
+
+/**
  * 压缩第三方js
  */
 gulp.task('build-js', function () {
@@ -80,4 +117,5 @@ gulp.task('build-js', function () {
         .pipe(uglify({ mangle: false }))
         .pipe(gulp.dest('./dist/js'))
 });
+
 gulp.task('default',['watch']);
