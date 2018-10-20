@@ -1,4 +1,5 @@
 import { sayHello } from "./greet";
+import { con } from './con'
 
 function showHello(divName: string, name: string) {
     let test = '123'
@@ -6,5 +7,5 @@ function showHello(divName: string, name: string) {
     const elt = document.getElementById(divName);
     elt.innerText = sayHello(name);
 }
-
+console.log(con('con'))
 showHello("greeting", "TypeScript test ts");
