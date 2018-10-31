@@ -6,7 +6,7 @@ const cssmin = require('gulp-minify-css');
 const sourcemaps = require('gulp-sourcemaps');
 // 出现异常并不终止watch事件（gulp-plumber），并提示我们出现了错误（gulp-notify）
 const notify = require('gulp-notify');
-const plumber  = require('gulp-plumber');
+const plumber = require('gulp-plumber');
 const uglify = require('gulp-uglify');
 const browserSync = require('browser-sync').create();
 
@@ -29,17 +29,17 @@ const buffer = require('vinyl-buffer');
 
 
 
-gulp.task('watch',['build-html','build-less','build-js'],function(gulpCallback){
+gulp.task('watch', ['build-html', 'build-less', 'build-js'], function (gulpCallback) {
     browserSync.init({
         server: './dist',
-        open : true
-    },function callback(){
-        gulp.watch('./src/**/*.html',['build-html']);
-        gulp.watch('./src/less/**/*.less',['build-less']);
-        gulp.watch('./src/css/**/*.css',['build-css']);
-        gulp.watch('./src/es6/**/*.js',['build-es6']);
-        gulp.watch('./src/ts/**/*.ts',['build-ts']);
-        gulp.watch('./src/js/**/*.js',['build-js']);
+        open: true
+    }, function callback() {
+        gulp.watch('./src/**/*.html', ['build-html']);
+        gulp.watch('./src/less/**/*.less', ['build-less']);
+        gulp.watch('./src/css/**/*.css', ['build-css']);
+        // gulp.watch('./src/es6/**/*.js',['build-es6']);
+        gulp.watch('./src/ts/**/*.ts', ['build-ts']);
+        gulp.watch('./src/js/**/*.js', ['build-js']);
         gulpCallback();
     });
 });
@@ -50,21 +50,23 @@ gulp.task('build-html', function () {
         .pipe(browserSync.stream());
 })
 
-gulp.task('build-less',function(){
+gulp.task('build-less', function () {
     return gulp.src('./src/less/*.less')
-    .pipe(sourcemaps.init())
-    .pipe(plumber({errorHandler: notify.onError('Error: <%= error.message %>')}))
-    .pipe(less({
-        paths : [path.join(__dirname,'less','includes')]
-    }))
-    .pipe(cssmin())
-    .pipe(autoprefixer({
-        browsers: ['last 2 versions'],
-        cascade: false
-    }))
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest('./dist/css'))
-    .pipe(browserSync.stream());
+        .pipe(sourcemaps.init())
+        .pipe(plumber({
+            errorHandler: notify.onError('Error: <%= error.message %>')
+        }))
+        .pipe(less({
+            paths: [path.join(__dirname, 'less', 'includes')]
+        }))
+        .pipe(cssmin())
+        .pipe(autoprefixer({
+            browsers: ['last 2 versions'],
+            cascade: false
+        }))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('./dist/css'))
+        .pipe(browserSync.stream());
 });
 
 /**
@@ -76,37 +78,39 @@ gulp.task('build-css', function () {
         .pipe(gulp.dest('./dist/css'))
 })
 
-gulp.task('build-es6',function(){
-    return gulp.src('./src/es6/*.js')
-        .pipe(sourcemaps.init())
-        .pipe(babel())
-        .pipe(uglify({ mangle: false }))
-        // .pipe(concat("all.js"))
-        .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest("./dist/js"))
-        .pipe(browserSync.stream())
-});
+// gulp.task('build-es6',function(){
+//     return gulp.src('./src/es6/*.js')
+//         .pipe(sourcemaps.init())
+//         .pipe(babel())
+//         .pipe(uglify({ mangle: false }))
+//         // .pipe(concat("all.js"))
+//         .pipe(sourcemaps.write("."))
+//         .pipe(gulp.dest("./dist/js"))
+//         .pipe(browserSync.stream())
+// });
 
 /**
  * ts
  */
 gulp.task("build-ts", function () {
     return browserify({
-        basedir: '.',
-        debug: true,
-        entries: ['src/ts/main.ts'],
-        cache: {},
-        packageCache: {}
-    })
-    .plugin(tsify)
-    .bundle()
-    .pipe(source('main.js'))
-    .pipe(buffer())
-    .pipe(sourcemaps.init({loadMaps: true}))
-    .pipe(uglify())
-    .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest("dist/js"))
-    .pipe(browserSync.stream())
+            basedir: '.',
+            debug: true,
+            entries: ['src/ts/main.ts'],
+            cache: {},
+            packageCache: {}
+        })
+        .plugin(tsify)
+        .bundle()
+        .pipe(source('main.js'))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({
+            loadMaps: true
+        }))
+        .pipe(uglify())
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest("dist/js"))
+        .pipe(browserSync.stream())
 });
 
 /**
@@ -114,8 +118,10 @@ gulp.task("build-ts", function () {
  */
 gulp.task('build-js', function () {
     return gulp.src('./src/js/*.js')
-        .pipe(uglify({ mangle: false }))
+        .pipe(uglify({
+            mangle: false
+        }))
         .pipe(gulp.dest('./dist/js'))
 });
 
-gulp.task('default',['watch']);
+gulp.task('default', ['watch']);
