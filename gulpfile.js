@@ -29,7 +29,7 @@ const buffer = require('vinyl-buffer');
 
 const imagemin = require('gulp-imagemin') // 压缩图片
 const cache = require('gulp-cache') // 缓存
-
+const htmlmin = require('gulp-htmlmin') // html
 
 gulp.task('watch', ['build-html', 'build-less', 'build-js'], function (gulpCallback) {
     browserSync.init({
@@ -49,6 +49,10 @@ gulp.task('watch', ['build-html', 'build-less', 'build-js'], function (gulpCallb
 
 gulp.task('build-html', function () {
     return gulp.src('./src/*.html')
+        .pipe(htmlmin({
+            collapseWhitespace: true,
+            removeComments: true
+        }))
         .pipe(gulp.dest('dist'))
         .pipe(browserSync.stream());
 })
