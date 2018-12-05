@@ -27,6 +27,8 @@ const tsify = require("tsify");
 
 const buffer = require('vinyl-buffer');
 
+const imagemin = require('gulp-imagemin') // 压缩图片
+const cache = require('gulp-cache') // 缓存
 
 
 gulp.task('watch', ['build-html', 'build-less', 'build-js'], function (gulpCallback) {
@@ -40,6 +42,7 @@ gulp.task('watch', ['build-html', 'build-less', 'build-js'], function (gulpCallb
         // gulp.watch('./src/es6/**/*.js',['build-es6']);
         gulp.watch('./src/ts/**/*.ts', ['build-ts']);
         gulp.watch('./src/js/**/*.js', ['build-js']);
+        gulp.watch('./src/img/**/*.+(png|jpg|jpeg|gif|svg)', ['build-img']);
         gulpCallback();
     });
 });
@@ -123,5 +126,12 @@ gulp.task('build-js', function () {
         }))
         .pipe(gulp.dest('./dist/js'))
 });
+
+gulp.task('build-img', function () {
+    return gulp.src('./src/img/**/*.+(png|jpg|jpeg|gif|svg)')
+        .pipe(cache(imagemin()))
+        .pipe(gulp.dest('dist/img'))
+        .pipe(browserSync.stream());
+})
 
 gulp.task('default', ['watch']);
