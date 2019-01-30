@@ -34,7 +34,13 @@ const htmlmin = require('gulp-htmlmin') // html
 const es = require('event-stream')
 const rename = require("gulp-rename")
 
-gulp.task('watch', ['build-html', 'build-less', 'build-css', 'build-ts', 'build-js', 'build-img', 'build-lib'], function () {
+const changed = require('gulp-changed');
+const SRC = 'src'
+
+var watchify = require('watchify');
+
+
+gulp.task('watch', ['build-html', 'build-less', 'build-css', 'build-js', 'build-img', 'build-lib'], function () {
     browserSync.init({
         server: './dist',
         port: '5500',
@@ -43,10 +49,8 @@ gulp.task('watch', ['build-html', 'build-less', 'build-css', 'build-ts', 'build-
     gulp.watch('./src/**/*.html', ['build-html']);
     gulp.watch('./src/less/**/*.less', ['build-less']);
     gulp.watch('./src/css/**/*.css', ['build-css']);
-    // gulp.watch('./src/es6/**/*.js', ['build-es6']);
-    gulp.watch('./src/ts/**/*.ts', ['build-ts']);
-    gulp.watch('./src/js/**/*.js', ['build-js']);
-    gulp.watch('./src/img/**/*.+(png|jpg|jpeg|gif|svg)', ['build-img']);
+    gulp.watch('./src/js/**/*', ['build-js']);
+    gulp.watch('./src/img/**/*', ['build-img']);
     gulp.watch('./src/lib/*', ['build-lib']);
 })
 
@@ -89,32 +93,15 @@ gulp.task('build-css', function () {
         .pipe(gulp.dest('./dist/css/public'))
 })
 
-// es6
-// gulp.task('build-es6', function () {
-//     return gulp.src('./src/es6/**/*.js')
-//         .pipe(sourcemaps.init())
-//         .pipe(babel())
-//         .pipe(uglify({
-//             mangle: false
-//         }))
-//         // .pipe(concat("all.js"))
-//         .pipe(sourcemaps.write("."))
-//         .pipe(gulp.dest("./dist/js"))
-//         .pipe(browserSync.stream())
-// });
-
-/**
- * ts
- */
-gulp.task("build-ts", function (done) {
-    gulp.src('./src/ts/**/main-*.ts', function (err, files) {
+gulp.task("build-js", function (done) {
+    gulp.src('./src/js/**/main-*.+(js|ts)', function (err, files) {
         if (err) done(err)
         var tasks = files.map(function (entry) {
-            return browserify({
+            return watchify(browserify({
                     basedir: '.',
                     debug: true,
                     entries: entry
-                })
+                }))
                 .plugin(tsify)
                 .bundle()
                 .pipe(source(entry))
@@ -122,8 +109,13 @@ gulp.task("build-ts", function (done) {
                     dirname: './',
                     extname: ".min.js"
                 }))
+                .pipe(plumber({
+                    errorHandler: notify.onError('Error: <%= error.message %>')
+                }))
+                .pipe(changed(SRC))
                 .pipe(buffer())
                 .pipe(uglify())
+                // .pipe(babel())
                 .pipe(sourcemaps.init({
                     loadMaps: true
                 }))
@@ -138,13 +130,13 @@ gulp.task("build-ts", function (done) {
 /**
  * 压缩第三方js
  */
-gulp.task('build-js', function () {
-    return gulp.src('./src/js/**/*.js')
-        // .pipe(uglify({
-        //     mangle: false
-        // }))
-        .pipe(gulp.dest('./dist/js'))
-});
+// gulp.task('build-js', function () {
+//     return gulp.src('./src/js/**/*.js')
+//         // .pipe(uglify({
+//         //     mangle: false
+//         // }))
+//         .pipe(gulp.dest('./dist/js'))
+// });
 
 gulp.task('build-img', function () {
     return gulp.src('./src/img/**/*.+(png|jpg|jpeg|gif|svg)')
