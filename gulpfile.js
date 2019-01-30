@@ -31,21 +31,25 @@ const imagemin = require('gulp-imagemin') // 压缩图片
 const cache = require('gulp-cache') // 缓存
 const htmlmin = require('gulp-htmlmin') // html
 
-gulp.task('watch', ['build-html', 'build-less', 'build-js'], function (gulpCallback) {
+const es = require('event-stream')
+const rename = require("gulp-rename")
+
+gulp.task('watch', ['build-html', 'build-less', 'build-css', 'build-ts', 'build-js', 'build-img', 'build-lib'], function () {
     browserSync.init({
         server: './dist',
-        open: true
-    }, function callback() {
-        gulp.watch('./src/**/*.html', ['build-html']);
-        gulp.watch('./src/less/**/*.less', ['build-less']);
-        gulp.watch('./src/css/**/*.css', ['build-css']);
-        // gulp.watch('./src/es6/**/*.js',['build-es6']);
-        gulp.watch('./src/ts/**/*.ts', ['build-ts']);
-        gulp.watch('./src/js/**/*.js', ['build-js']);
-        gulp.watch('./src/img/**/*.+(png|jpg|jpeg|gif|svg)', ['build-img']);
-        gulpCallback();
-    });
-});
+        port: '5500',
+        open: true,
+    })
+    gulp.watch('./src/**/*.html', ['build-html']);
+    gulp.watch('./src/less/**/*.less', ['build-less']);
+    gulp.watch('./src/css/**/*.css', ['build-css']);
+    // gulp.watch('./src/es6/**/*.js', ['build-es6']);
+    gulp.watch('./src/ts/**/*.ts', ['build-ts']);
+    gulp.watch('./src/js/**/*.js', ['build-js']);
+    gulp.watch('./src/img/**/*.+(png|jpg|jpeg|gif|svg)', ['build-img']);
+    gulp.watch('./src/lib/*', ['build-lib']);
+})
+
 
 gulp.task('build-html', function () {
     return gulp.src('./src/*.html')
@@ -58,7 +62,7 @@ gulp.task('build-html', function () {
 })
 
 gulp.task('build-less', function () {
-    return gulp.src('./src/less/*.less')
+    return gulp.src('./src/less/**/index-*.less')
         .pipe(sourcemaps.init())
         .pipe(plumber({
             errorHandler: notify.onError('Error: <%= error.message %>')
@@ -80,16 +84,19 @@ gulp.task('build-less', function () {
  * 压缩第三方css
  */
 gulp.task('build-css', function () {
-    return gulp.src('./src/css/*.css')
+    return gulp.src('./src/css/**/*.css')
         .pipe(cssmin())
-        .pipe(gulp.dest('./dist/css'))
+        .pipe(gulp.dest('./dist/css/public'))
 })
 
-// gulp.task('build-es6',function(){
-//     return gulp.src('./src/es6/*.js')
+// es6
+// gulp.task('build-es6', function () {
+//     return gulp.src('./src/es6/**/*.js')
 //         .pipe(sourcemaps.init())
 //         .pipe(babel())
-//         .pipe(uglify({ mangle: false }))
+//         .pipe(uglify({
+//             mangle: false
+//         }))
 //         // .pipe(concat("all.js"))
 //         .pipe(sourcemaps.write("."))
 //         .pipe(gulp.dest("./dist/js"))
@@ -99,35 +106,43 @@ gulp.task('build-css', function () {
 /**
  * ts
  */
-gulp.task("build-ts", function () {
-    return browserify({
-            basedir: '.',
-            debug: true,
-            entries: ['src/ts/main.ts'],
-            cache: {},
-            packageCache: {}
+gulp.task("build-ts", function (done) {
+    gulp.src('./src/ts/**/main-*.ts', function (err, files) {
+        if (err) done(err)
+        var tasks = files.map(function (entry) {
+            return browserify({
+                    basedir: '.',
+                    debug: true,
+                    entries: entry
+                })
+                .plugin(tsify)
+                .bundle()
+                .pipe(source(entry))
+                .pipe(rename({
+                    dirname: './',
+                    extname: ".min.js"
+                }))
+                .pipe(buffer())
+                .pipe(uglify())
+                .pipe(sourcemaps.init({
+                    loadMaps: true
+                }))
+                .pipe(sourcemaps.write('./'))
+                .pipe(gulp.dest("dist/js"))
+                .pipe(browserSync.stream())
         })
-        .plugin(tsify)
-        .bundle()
-        .pipe(source('main.js'))
-        .pipe(buffer())
-        .pipe(sourcemaps.init({
-            loadMaps: true
-        }))
-        .pipe(uglify())
-        .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest("dist/js"))
-        .pipe(browserSync.stream())
+        es.merge(tasks).on('end', done)
+    })
 });
 
 /**
  * 压缩第三方js
  */
 gulp.task('build-js', function () {
-    return gulp.src('./src/js/*.js')
-        .pipe(uglify({
-            mangle: false
-        }))
+    return gulp.src('./src/js/**/*.js')
+        // .pipe(uglify({
+        //     mangle: false
+        // }))
         .pipe(gulp.dest('./dist/js'))
 });
 
@@ -137,5 +152,11 @@ gulp.task('build-img', function () {
         .pipe(gulp.dest('dist/img'))
         .pipe(browserSync.stream());
 })
+
+gulp.task('build-lib', function () {
+    return gulp.src('./src/lib/**/*')
+        .pipe(gulp.dest('./dist/lib'))
+});
+
 
 gulp.task('default', ['watch']);

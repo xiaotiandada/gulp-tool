@@ -1,7 +1,7 @@
 {
-    "files": [
-        "src/ts/main.ts"
-    ],
+    // "files": [
+    //     "src/ts/**/*.ts",
+    // ],
     "compilerOptions": {
         "noImplicitAny": true,
         "target": "es5"

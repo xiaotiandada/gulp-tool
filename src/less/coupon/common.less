@@ -1,0 +1,231 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑"-apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+    sans-serif;
+  background-color: #fff;
+  color: #000;
+  height: 100%;
+}
+
+.layui-layer-title {
+  text-align: left;
+}
+
+.container {
+  max-width: 10rem;
+  height: 100%;
+  margin: 0 auto;
+  background-color: #000;
+  background-image: url(../../img/wechat/bj.jpg);
+  background-size: cover;
+  background-position: center;
+  text-align: center;
+  position: relative;
+  /* padding: 0 0 0.6133rem; */
+  display: flex;
+  flex-direction: column;
+}
+
+.container .block1 {
+  display: flex;
+  flex-direction: column;
+  flex: 2 0 0%;
+  align-items: center;
+  justify-content: center;
+}
+
+.container .block3 {
+  display: flex;
+  flex: 5 0 0%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.container .title {
+  width: 5.4667rem;
+}
+
+.container .detail {
+  width: 7.8667rem;
+  margin-top: 0.6133rem;
+}
+
+.container .money {
+  width: 100%;
+}
+
+.container .title:nth-of-type(1) {
+  margin-top: 1.7067rem;
+}
+
+.container .title:nth-of-type(2) {
+  margin-top: 0.1867rem;
+}
+
+.container .form {
+  width: 80%;
+  background-color: #eed7a4;
+  border-radius: 0.1333rem;
+  padding: 0.4rem 0 0.4rem;
+  margin-top: -1.3333rem;
+  /* margin-top: 0.4rem; */
+  /* margin-bottom: 0.4rem; */
+}
+
+.container .form-col {
+  width: 90%;
+  margin: 0.2667rem auto;
+  padding: 0.2667rem 0.4rem;
+  border-radius: 0.8rem;
+  background-color: #fff;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.container .form-col input {
+  width: 100%;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+}
+
+.container .form-col input::-webkit-input-placeholder {
+  color: rgba(84, 22, 0, 0.5);
+}
+
+.form-checkerror {
+  font-size: 0.3201rem;
+  padding: 0 0 0 0.8rem;
+  margin: 0 auto;
+  text-align: left;
+  width: 90%;
+  color: #ff0000;
+  display: none;
+}
+
+.container .form-col .form-code {
+  display: block;
+  min-width: 1.6133rem;
+  position: absolute;
+  top: 50%;
+  right: 0.24rem;
+  transform: translate(0, -50%);
+  border-radius: 0.3067rem;
+  padding: 0.1867rem 0.24rem;
+  text-decoration: none;
+  background-color: rgb(239, 239, 239);
+  color: #929292;
+}
+
+.container .form-col .form-code.active {
+  background-color: rgba(238, 215, 164, 0.5);
+  color: #a35a23;
+}
+
+.container .form-coupon {
+  display: block;
+  width: 7.52rem;
+  height: 1.2rem;
+  margin: 0.4rem auto 0;
+  background-image: url(../../img/wechat/get-coupon.png);
+  background-size: cover;
+  background-position: center;
+}
+
+.container .form-title {
+  font-size: 0.44rem;
+  letter-spacing: 1px;
+  color: #a35a23;
+  text-align: center;
+  margin-top: 0.64rem;
+}
+
+.container .ribon {
+  width: 1.5467rem;
+  position: absolute;
+  right: 0;
+  top: 0.5333rem;
+}
+
+.rule {
+  position: absolute;
+  top: 0.2667rem;
+  right: 0.2667rem;
+  color: #fff;
+  font-size: 0.4rem;
+  /* text-decoration: none; */
+}
+
+.rule-detail {
+  padding: 0.2667rem 0.5333rem;
+  background-color: #fff;
+  display: none;
+}
+
+.rule-detail p {
+  font-size: 0.3733rem;
+  color: #333;
+  text-align: left;
+  line-height: 1.5;
+  padding: 0;
+  margin: 0.1333rem 0;
+}
+
+/* full */
+
+.full {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: none;
+}
+
+.dialog {
+  width: 7.52rem;
+  margin: 2.6667rem auto 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.dialog .dialog-img {
+  width: 100%;
+  height: 8.24rem;
+  background-size: cover;
+  background-position: center;
+}
+
+.dialog .dialog-img.timeout {
+  background-image: url(../../img/wechat/coupon-timeout.png);
+}
+
+.dialog .dialog-img.used {
+  background-image: url(../../img/wechat/coupon-used.png);
+}
+
+.dialog .dialog-img.unused {
+  background-image: url(../../img/wechat/coupon-unused.png);
+}
+
+.dialog .dialog-img p {
+  color: #333;
+  font-size: 0.3467rem;
+  padding: 0;
+  margin: 5.9733rem 0 0 0;
+  text-align: center;
+}
+
+.dialog-close {
+  width: 0.7467rem;
+  margin-top: 0.8rem;
+}
