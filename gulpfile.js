@@ -22,9 +22,9 @@ let options = minimist(process.argv.slice(2), knownOptions);
 let envBoolean = options.env === 'production';
 
 function html() {
-  return src('client/templates/*.pug')
-    .pipe(pug())
-    .pipe(dest('build/html'))
+  return src('src/html/**/*.pug')
+    .pipe(pug()) // 编译pug
+    .pipe(dest('build'))
 }
 
 function css() {
