@@ -1,6 +1,1 @@
-body {
-  background-color: #eee;
-}
-body div {
-  background-color: #eee;
-}
+body{background-color:#fff;display:-webkit-box;display:-ms-flexbox;display:flex}body,body div{font-size:12px}
