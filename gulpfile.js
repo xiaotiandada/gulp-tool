@@ -1,4 +1,9 @@
-const { src, dest, parallel, watch } = require("gulp");
+const {
+  src,
+  dest,
+  parallel,
+  watch
+} = require("gulp");
 const pug = require("gulp-pug");
 const less = require("gulp-less");
 const minifyCSS = require("gulp-csso"); // 压缩css
@@ -17,6 +22,9 @@ const htmlmin = require("gulp-htmlmin"); // 压缩html
 const tap = require("gulp-tap"); // 处理文件
 
 const path = require("path"); // 路径
+const rev = require("gulp-rev"); //  添加后缀
+const revCollector = require("gulp-rev-collector"); // html添加后缀
+const rename = require("gulp-rename");
 
 // 获取环境变量
 let knownOptions = {
@@ -40,9 +48,10 @@ function serve() {
     }
   });
 
-  watch(pathUrlHtml, html);
+  // watch(pathUrlHtml, html);
   watch(pathUrlCss, css);
   watch(pathUrlJs, js);
+  watch(['./src/rev/**/*.json', './src/**/*.html'], revs)
   // watch(pathUrlImg, img);
 }
 
@@ -50,30 +59,30 @@ function html() {
   let booleanHtml = false; // true pug | false html
   return (
     src(pathUrlHtml)
-      .pipe(watchs(pathUrlHtml))
-      // .pipe(tap((file) => {
-      //   console.log(file);
-      //   console.log(file.path)
-      //   if (path.extname(file.path) === '.html') {
+    .pipe(watchs(pathUrlHtml))
+    // .pipe(tap((file) => {
+    //   console.log(file);
+    //   console.log(file.path)
+    //   if (path.extname(file.path) === '.html') {
 
-      //   } else if (path.extname(file.path) === '.pug') {}
-      // }))
-      .pipe(gulpif(booleanHtml, pug())) // 编译pug
-      .pipe(
-        gulpif(
-          !booleanHtml,
-          htmlmin({
-            collapseWhitespace: true,
-            removeComments: true
-          })
-        )
-      ) // 压缩html
-      .pipe(dest("build"))
-      .pipe(
-        reload({
-          stream: true
+    //   } else if (path.extname(file.path) === '.pug') {}
+    // }))
+    .pipe(gulpif(booleanHtml, pug())) // 编译pug
+    .pipe(
+      gulpif(
+        !booleanHtml,
+        htmlmin({
+          collapseWhitespace: true,
+          removeComments: true
         })
       )
+    ) // 压缩html
+    .pipe(dest("build"))
+    .pipe(
+      reload({
+        stream: true
+      })
+    )
   );
 }
 
@@ -105,12 +114,20 @@ function js() {
     src(pathUrlJs, {
       sourcemaps: !envBoolean
     })
-      // .pipe(concat("app.min.js"))
-      .pipe(
-        dest("build/js", {
-          sourcemaps: !envBoolean
-        })
-      )
+    // .pipe(concat("app.min.js"))
+    .pipe(rev())
+    .pipe(
+      dest("build/js", {
+        sourcemaps: !envBoolean
+      })
+    )
+    .pipe(rev.manifest())
+    .pipe(dest('src/rev/js'))
+    .pipe(
+      reload({
+        stream: true
+      })
+    )
   );
 }
 
@@ -118,6 +135,27 @@ function img() {
   return src(pathUrlImg).pipe(dest("build/img"));
 }
 img();
+
+function revs() {
+  return src(['./src/rev/**/*.json', './src/**/*.html'])
+    .pipe(revCollector())
+    .pipe(
+      gulpif(
+        envBoolean,
+        htmlmin({
+          collapseWhitespace: true,
+          removeComments: true
+        })
+      )
+    ) // 压缩html
+    .pipe(
+      rename({
+        dirname: "./"
+      })
+    )
+    .pipe(dest('build'))
+}
+
 // exports.js = js;
 // exports.css = css;
 // exports.html = html;
