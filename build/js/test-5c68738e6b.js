@@ -1,2 +1,0 @@
-let a = 123
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiIiwic291cmNlcyI6WyJ0ZXN0LmpzIl0sInNvdXJjZXNDb250ZW50IjpbImxldCBhID0gMTIzIl0sImZpbGUiOiJ0ZXN0LmpzIn0=

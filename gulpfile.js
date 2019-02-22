@@ -4,10 +4,9 @@ const {
   parallel,
   watch
 } = require("gulp");
-const pug = require("gulp-pug");
 const less = require("gulp-less");
 const minifyCSS = require("gulp-csso"); // 压缩css
-const concat = require("gulp-concat");
+const concat = require("gulp-concat"); // 合并
 
 const gulpif = require("gulp-if"); // gulp if 判断环境
 const minimist = require("minimist"); // 解析参数
@@ -19,12 +18,10 @@ const reload = browserSync.reload; // 实时重载
 const watchs = require("gulp-watch"); // 只重新编译被更改过的文件
 const htmlmin = require("gulp-htmlmin"); // 压缩html
 
-const tap = require("gulp-tap"); // 处理文件
-
-const path = require("path"); // 路径
 const rev = require("gulp-rev"); //  添加后缀
 const revCollector = require("gulp-rev-collector"); // html添加后缀
-const rename = require("gulp-rename");
+const rename = require("gulp-rename"); // 重命名
+const clean = require("gulp-clean"); // 删除
 
 // 获取环境变量
 let knownOptions = {
@@ -36,10 +33,14 @@ let knownOptions = {
 let options = minimist(process.argv.slice(2), knownOptions);
 let envBoolean = options.env === "production";
 
-let pathUrlHtml = "src/html/**/*.+(pug|html)";
+// path 路径
+let pathUrlRev = "src/rev/**/*.json";
+let pathUrlHtml = "src/html/**/*.html";
 let pathUrlCss = "src/css/**/*.less";
 let pathUrlJs = "src/js/**/*.js";
 let pathUrlImg = "src/img/**/*";
+
+let cleanPathUrlJs = 'build/js/**/*.js'
 
 function serve() {
   browserSync({
@@ -48,42 +49,29 @@ function serve() {
     }
   });
 
-  // watch(pathUrlHtml, html);
+  watch([pathUrlRev, pathUrlHtml], html)
   watch(pathUrlCss, css);
   watch(pathUrlJs, js);
-  watch(['./src/rev/**/*.json', './src/**/*.html'], revs)
-  // watch(pathUrlImg, img);
 }
 
 function html() {
-  let booleanHtml = false; // true pug | false html
-  return (
-    src(pathUrlHtml)
-    .pipe(watchs(pathUrlHtml))
-    // .pipe(tap((file) => {
-    //   console.log(file);
-    //   console.log(file.path)
-    //   if (path.extname(file.path) === '.html') {
-
-    //   } else if (path.extname(file.path) === '.pug') {}
-    // }))
-    .pipe(gulpif(booleanHtml, pug())) // 编译pug
+  return src([pathUrlRev, pathUrlHtml])
+    .pipe(revCollector())
     .pipe(
       gulpif(
-        !booleanHtml,
+        envBoolean,
         htmlmin({
           collapseWhitespace: true,
           removeComments: true
         })
       )
     ) // 压缩html
-    .pipe(dest("build"))
     .pipe(
-      reload({
-        stream: true
+      rename({
+        dirname: "./"
       })
     )
-  );
+    .pipe(dest('build'))
 }
 
 function css() {
@@ -110,6 +98,7 @@ function css() {
 }
 
 function js() {
+  cleanJs()
   return (
     src(pathUrlJs, {
       sourcemaps: !envBoolean
@@ -122,7 +111,7 @@ function js() {
       })
     )
     .pipe(rev.manifest())
-    .pipe(dest('src/rev/js'))
+    .pipe(dest('src/rev'))
     .pipe(
       reload({
         stream: true
@@ -131,33 +120,15 @@ function js() {
   );
 }
 
+function cleanJs() {
+  return src(cleanPathUrlJs, {
+    read: false
+  }).pipe(clean())
+}
+
 function img() {
   return src(pathUrlImg).pipe(dest("build/img"));
 }
-img();
 
-function revs() {
-  return src(['./src/rev/**/*.json', './src/**/*.html'])
-    .pipe(revCollector())
-    .pipe(
-      gulpif(
-        envBoolean,
-        htmlmin({
-          collapseWhitespace: true,
-          removeComments: true
-        })
-      )
-    ) // 压缩html
-    .pipe(
-      rename({
-        dirname: "./"
-      })
-    )
-    .pipe(dest('build'))
-}
-
-// exports.js = js;
-// exports.css = css;
-// exports.html = html;
-// exports.default = parallel(html, css, js);
+img()
 exports.default = parallel(serve);
