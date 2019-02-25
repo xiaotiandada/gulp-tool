@@ -22,6 +22,12 @@ const rev = require("gulp-rev"); //  添加后缀
 const revCollector = require("gulp-rev-collector"); // html添加后缀
 const rename = require("gulp-rename"); // 重命名
 const clean = require("gulp-clean"); // 删除
+const browserify = require('browserify');
+const log = require('gulplog');
+const tap = require('gulp-tap');
+const buffer = require('gulp-buffer');
+const sourcemaps = require('gulp-sourcemaps');
+const uglify = require('gulp-uglify');
 
 // 获取环境变量
 let knownOptions = {
@@ -37,7 +43,7 @@ let envBoolean = options.env === "production";
 let pathUrlRev = "src/rev/**/*.json";
 let pathUrlHtml = "src/html/**/*.html";
 let pathUrlCss = "src/css/**/*.less";
-let pathUrlJs = "src/js/**/*.js";
+let pathUrlJs = "src/js/**/main-*.js";
 let pathUrlImg = "src/img/**/*";
 
 let cleanPathUrlJs = 'build/js/**/*.js'
@@ -49,9 +55,9 @@ function serve() {
     }
   });
 
-  watch([pathUrlRev, pathUrlHtml], html)
-  watch(pathUrlCss, css);
-  watch(pathUrlJs, js);
+  watch([pathUrlRev, pathUrlHtml], html).on('change', reload)
+  watch(pathUrlCss, css).on('change', reload)
+  watch(pathUrlJs, js).on('change', reload)
 }
 
 function html() {
@@ -90,34 +96,48 @@ function css() {
       )
     )
     .pipe(dest("build/css"))
-    .pipe(
-      reload({
-        stream: true
-      })
-    );
 }
 
 function js() {
-  cleanJs()
-  return (
-    src(pathUrlJs, {
-      sourcemaps: !envBoolean
+  // cleanJs()
+  // return (
+  //   src(pathUrlJs, {
+  //     sourcemaps: !envBoolean
+  //   })
+  //   // .pipe(concat("app.min.js"))
+  //   .pipe(rev())
+  //   .pipe(
+  //     dest("build/js", {
+  //       sourcemaps: !envBoolean
+  //     })
+  //   )
+  //   .pipe(rev.manifest())
+  //   .pipe(dest('src/rev'))
+  // );
+
+  return src(pathUrlJs, {
+      read: false
     })
-    // .pipe(concat("app.min.js"))
-    .pipe(rev())
+    .pipe(tap(function (file) {
+      log.info('bundling ' + file.path);
+      file.contents = browserify(file.path, {
+        debug: true
+      }).bundle();
+    }))
+    .pipe(buffer())
+    .pipe(uglify())
+    .pipe(
+      rename({
+        dirname: "./",
+        extname: ".min.js"
+      })
+    )
     .pipe(
       dest("build/js", {
         sourcemaps: !envBoolean
       })
     )
-    .pipe(rev.manifest())
-    .pipe(dest('src/rev'))
-    .pipe(
-      reload({
-        stream: true
-      })
-    )
-  );
+
 }
 
 function cleanJs() {
