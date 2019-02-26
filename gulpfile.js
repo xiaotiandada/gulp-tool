@@ -143,7 +143,7 @@ function img() {
     .pipe(imagemin())
     .pipe(dest("build/img"));
 }
-img();
+// img();
 
 function static() {
   return src(pathUrlStatic).pipe(dest("build/static"));
