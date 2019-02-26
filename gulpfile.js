@@ -26,7 +26,6 @@ const browserify = require('browserify');
 const log = require('gulplog');
 const tap = require('gulp-tap');
 const buffer = require('gulp-buffer');
-const sourcemaps = require('gulp-sourcemaps');
 const uglify = require('gulp-uglify');
 
 const tsify = require("tsify");
