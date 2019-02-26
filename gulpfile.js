@@ -29,6 +29,8 @@ const buffer = require('gulp-buffer');
 const sourcemaps = require('gulp-sourcemaps');
 const uglify = require('gulp-uglify');
 
+const tsify = require("tsify");
+
 // 获取环境变量
 let knownOptions = {
   string: "env",
@@ -43,7 +45,7 @@ let envBoolean = options.env === "production";
 let pathUrlRev = "src/rev/**/*.json";
 let pathUrlHtml = "src/html/**/*.html";
 let pathUrlCss = "src/css/**/*.less";
-let pathUrlJs = "src/js/**/main-*.js";
+let pathUrlJs = "src/js/**/main-*.ts";
 let pathUrlImg = "src/img/**/*";
 
 let cleanPathUrlJs = 'build/js/**/*.js'
@@ -121,8 +123,10 @@ function js() {
     .pipe(tap(function (file) {
       log.info('bundling ' + file.path);
       file.contents = browserify(file.path, {
-        debug: true
-      }).bundle();
+          debug: true
+        })
+        .plugin(tsify)
+        .bundle();
     }))
     .pipe(buffer())
     .pipe(uglify())

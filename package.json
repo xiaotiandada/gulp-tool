@@ -37,6 +37,9 @@
     "gulp-uglify": "^3.0.1",
     "gulp-watch": "^5.0.1",
     "gulplog": "^1.0.0",
-    "minimist": "^1.2.0"
-  }
+    "minimist": "^1.2.0",
+    "tsify": "^4.0.1",
+    "typescript": "^3.3.3333"
+  },
+  "dependencies": {}
 }
