@@ -4,31 +4,27 @@ const {
   parallel,
   watch
 } = require("gulp");
-const less = require("gulp-less");
+const less = require("gulp-less"); // less
 const minifyCSS = require("gulp-csso"); // 压缩css
 const concat = require("gulp-concat"); // 合并
-
 const gulpif = require("gulp-if"); // gulp if 判断环境
 const minimist = require("minimist"); // 解析参数
 const autoprefixer = require("gulp-autoprefixer"); // 添加前缀
-
 const browserSync = require("browser-sync"); // 实时重载
 const reload = browserSync.reload; // 实时重载
-
 const watchs = require("gulp-watch"); // 只重新编译被更改过的文件
 const htmlmin = require("gulp-htmlmin"); // 压缩html
-
 const rev = require("gulp-rev"); //  添加后缀
 const revCollector = require("gulp-rev-collector"); // html添加后缀
 const rename = require("gulp-rename"); // 重命名
 const clean = require("gulp-clean"); // 删除
-const browserify = require('browserify');
-const log = require('gulplog');
-const tap = require('gulp-tap');
-const buffer = require('gulp-buffer');
-const uglify = require('gulp-uglify');
-
-const tsify = require("tsify");
+const browserify = require("browserify");
+const log = require("gulplog");
+const tap = require("gulp-tap");
+const buffer = require("gulp-buffer");
+const uglify = require("gulp-uglify");
+const tsify = require("tsify"); // ts
+const imagemin = require("gulp-imagemin"); // 压缩图片
 
 // 获取环境变量
 let knownOptions = {
@@ -43,11 +39,12 @@ let envBoolean = options.env === "production";
 // path 路径
 let pathUrlRev = "src/rev/**/*.json";
 let pathUrlHtml = "src/html/**/*.html";
-let pathUrlCss = "src/css/**/*.less";
+let pathUrlCss = "src/css/**/main-*.less";
 let pathUrlJs = "src/js/**/main-*.ts";
 let pathUrlImg = "src/img/**/*";
+let pathUrlStatic = "src/static/**/*";
 
-let cleanPathUrlJs = 'build/js/**/*.js'
+let cleanPathUrlJs = "build/js/**/*.js";
 
 function serve() {
   browserSync({
@@ -56,9 +53,11 @@ function serve() {
     }
   });
 
-  watch([pathUrlRev, pathUrlHtml], html).on('change', reload)
-  watch(pathUrlCss, css).on('change', reload)
-  watch(pathUrlJs, js).on('change', reload)
+  watch([pathUrlRev, pathUrlHtml], html).on("change", reload);
+  watch(pathUrlCss, css).on("change", reload);
+  watch(pathUrlJs, js).on("change", reload);
+  watch(pathUrlImg, img).on("change", reload);
+  watch(pathUrlStatic, static).on("change", reload);
 }
 
 function html() {
@@ -78,7 +77,7 @@ function html() {
         dirname: "./"
       })
     )
-    .pipe(dest('build'))
+    .pipe(dest("build"));
 }
 
 function css() {
@@ -96,23 +95,25 @@ function css() {
         })
       )
     )
-    .pipe(dest("build/css"))
+    .pipe(dest("build/css"));
 }
 
 function js() {
-  cleanJs()
+  cleanJs();
   return src(pathUrlJs, {
       read: false,
       sourcemaps: !envBoolean
     })
-    .pipe(tap(function (file) {
-      log.info('bundling ' + file.path);
-      file.contents = browserify(file.path, {
-          debug: true
-        })
-        .plugin(tsify)
-        .bundle();
-    }))
+    .pipe(
+      tap(function (file) {
+        log.info("bundling " + file.path);
+        file.contents = browserify(file.path, {
+            debug: true
+          })
+          .plugin(tsify)
+          .bundle();
+      })
+    )
     .pipe(buffer())
     .pipe(uglify())
     .pipe(
@@ -128,19 +129,23 @@ function js() {
       })
     )
     .pipe(rev.manifest())
-    .pipe(dest('src/rev'))
-
+    .pipe(dest("src/rev"));
 }
 
 function cleanJs() {
   return src(cleanPathUrlJs, {
     read: false
-  }).pipe(clean())
+  }).pipe(clean());
 }
 
 function img() {
-  return src(pathUrlImg).pipe(dest("build/img"));
+  return src(pathUrlImg)
+    .pipe(imagemin())
+    .pipe(dest("build/img"));
 }
+img();
 
-img()
+function static() {
+  return src(pathUrlStatic).pipe(dest("build/static"));
+}
 exports.default = parallel(serve);
