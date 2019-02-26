@@ -1,4 +1,0 @@
-() => {
-  console.log(1111111111111111111);
-}
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiIiwic291cmNlcyI6WyJpbmRleC5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyIoKSA9PiB7XHJcbiAgY29uc29sZS5sb2coMTExMTExMTExMTExMTExMTExMSk7XHJcbn0iXSwiZmlsZSI6ImluZGV4LmpzIn0=

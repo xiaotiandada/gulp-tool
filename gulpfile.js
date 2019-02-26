@@ -101,24 +101,10 @@ function css() {
 }
 
 function js() {
-  // cleanJs()
-  // return (
-  //   src(pathUrlJs, {
-  //     sourcemaps: !envBoolean
-  //   })
-  //   // .pipe(concat("app.min.js"))
-  //   .pipe(rev())
-  //   .pipe(
-  //     dest("build/js", {
-  //       sourcemaps: !envBoolean
-  //     })
-  //   )
-  //   .pipe(rev.manifest())
-  //   .pipe(dest('src/rev'))
-  // );
-
+  cleanJs()
   return src(pathUrlJs, {
-      read: false
+      read: false,
+      sourcemaps: !envBoolean
     })
     .pipe(tap(function (file) {
       log.info('bundling ' + file.path);
@@ -136,11 +122,14 @@ function js() {
         extname: ".min.js"
       })
     )
+    .pipe(rev())
     .pipe(
       dest("build/js", {
         sourcemaps: !envBoolean
       })
     )
+    .pipe(rev.manifest())
+    .pipe(dest('src/rev'))
 
 }
 
