@@ -1,12 +1,17 @@
 ## gulp-tool
 
-### Go
+### Start
 
+- Install dependencies
 ```bash
-# installation
 npm i
-# dev
+```
+- Run project
+```bash
 npm run dev
-# build
+```
+- build
+```bash
 npm run build
 ```
+
